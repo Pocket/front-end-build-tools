@@ -1,0 +1,70 @@
+{
+  "name": "pocket-build-tools",
+  "version": "1.0.5",
+  "description": "Build scripts for building the Pocket front end properties",
+  "private": true,
+  "engines": {
+    "node": ">=6"
+  },
+  "files": [
+    "extensions/pocket-new-tab/bin",
+    "extensions/save-to-pocket/bin"
+  ],
+  "bin": {
+    "build-pocket-new-tab": "./extensions/pocket-new-tab/bin/build.js",
+    "build-save-to-pocket": "./extensions/save-to-pocket/bin/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pocket/front-end-build-tools.git"
+  },
+  "author": "Pocket",
+  "bugs": {
+    "url": "https://github.com/Pocket/front-end-build-tools/issues"
+  },
+  "homepage": "https://github.com/Pocket/front-end-build-tools#readme",
+  "dependencies": {
+    "autoprefixer": "^7.1.4",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-jest": "^21.2.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-react-app": "^3.0.3",
+    "babel-runtime": "^6.26.0",
+    "case-sensitive-paths-webpack-plugin": "^2.1.1",
+    "chalk": "^2.1.0",
+    "cross-spawn": "^5.1.0",
+    "css-loader": "^0.28.7",
+    "eslint": "^4.8.0",
+    "eslint-config-react-app": "^2.0.1",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-flowtype": "^2.39.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "5.1.1",
+    "eslint-plugin-react": "^7.4.0",
+    "extract-text-webpack-plugin": "^3.0.1",
+    "file-loader": "^1.1.5",
+    "fs-extra": "^4.0.2",
+    "html-webpack-plugin": "^2.30.1",
+    "node-sass": "^4.5.3",
+    "object-assign": "^4.1.1",
+    "postcss": "^6.0.13",
+    "postcss-custom-media": "^6.0.0",
+    "postcss-flexbugs-fixes": "^3.2.0",
+    "postcss-loader": "^2.0.6",
+    "promise": "^8.0.1",
+    "react-dev-utils": "^4.1.0",
+    "react-error-overlay": "^2.0.2",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.19.0",
+    "stylelint": "^8.2.0",
+    "stylelint-config-standard": "^17.0.0",
+    "stylelint-order": "^0.7.0",
+    "url-loader": "^0.6.2",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.9.1",
+    "whatwg-fetch": "^2.0.3",
+    "write-file-webpack-plugin": "^4.2.0",
+    "yamljs": "^0.3.0"
+  }
+}
