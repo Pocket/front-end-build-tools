@@ -1,18 +1,16 @@
 {
   "name": "pocket-build-tools",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Build scripts for building the Pocket front end properties",
   "private": true,
   "engines": {
     "node": ">=6"
   },
   "files": [
-    "extensions/pocket-new-tab/bin",
-    "extensions/save-to-pocket/bin"
+    "bin"
   ],
   "bin": {
-    "build-pocket-new-tab": "./extensions/pocket-new-tab/bin/build.js",
-    "build-save-to-pocket": "./extensions/save-to-pocket/bin/build.js"
+    "build-pocket": "./bin/run.js"
   },
   "repository": {
     "type": "git",
