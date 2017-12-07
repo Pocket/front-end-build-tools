@@ -1,43 +1,43 @@
-'use strict';
+'use strict'
 
-const autoprefixer              = require('autoprefixer');
-const ExtractTextPlugin         = require("extract-text-webpack-plugin")
-const CaseSensitivePathsPlugin  = require('case-sensitive-paths-webpack-plugin');
-const HtmlWebpackPlugin         = require('html-webpack-plugin');
-const WriteFilePlugin           = require('write-file-webpack-plugin')
+const autoprefixer = require('autoprefixer')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const WriteFilePlugin = require('write-file-webpack-plugin')
 
-const eslintFormatter           = require('react-dev-utils/eslintFormatter');
-const InterpolateHtmlPlugin     = require('react-dev-utils/InterpolateHtmlPlugin');
-const ModuleScopePlugin         = require('react-dev-utils/ModuleScopePlugin');
-const WatchModulesPlugin        = require('react-dev-utils/WatchMissingNodeModulesPlugin');
+const eslintFormatter = require('react-dev-utils/eslintFormatter')
+const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin')
+const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin')
+const WatchModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin')
 
-const path                      = require('path');
-const webpack                   = require('webpack');
+const path = require('path')
+const webpack = require('webpack')
 
-const getClientEnvironment      = require('../env');
-const paths                     = require('../paths');
+const getClientEnvironment = require('./env')
+const paths = require('./paths')
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
-const publicPath = paths.servedPath;
+const publicPath = paths.servedPath
 // Some apps do not use client-side routing with pushState.
 // For these, "homepage" can be set to "." to enable relative asset paths.
-const shouldUseRelativeAssetPaths = publicPath === './';
+const shouldUseRelativeAssetPaths = publicPath === './'
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
-const publicUrl = publicPath.slice(0, -1);
+const publicUrl = publicPath.slice(0, -1)
 // Get environment variables to inject into our app.
-const env = getClientEnvironment(publicUrl);
+const env = getClientEnvironment(publicUrl)
 
 // Assert this just to be safe.
 // Development builds of React are slow and not intended for production.
 if (env.stringified['process.env'].NODE_ENV !== '"production"') {
-  throw new Error('Production builds must have NODE_ENV=production.');
+  throw new Error('Production builds must have NODE_ENV=production.')
 }
 
 // Note: defined here because it will be used more than once.
-const cssFilename = 'styles/[name].css';
+const cssFilename = 'styles/[name].css'
 
 // ExtractTextPlugin expects the build output to be flat.
 // (See https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/27)
@@ -46,7 +46,7 @@ const cssFilename = 'styles/[name].css';
 const extractTextPluginOptions = shouldUseRelativeAssetPaths
   ? // Making sure that the publicPath goes back to to build folder.
     { publicPath: Array(cssFilename.split('/').length).join('../') }
-  : {};
+  : {}
 
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
@@ -58,33 +58,15 @@ module.exports = {
   // This means they will be the "root" imports that are included in JS bundle.
   // The first two entry points enable "hot" CSS and auto-refreshes for JS.
   entry: {
-    background: [
-      paths.appBackground,
-    ],
-    options: [
-      paths.appOptions,
-    ],
-    login: [
-      paths.appLoginJs
-    ],
-    logout: [
-      paths.appLogoutJs
-    ],
-    frame: [
-      paths.appFrameJs
-    ],
-    save: [
-      paths.appSaveJs
-    ],
-    twitter: [
-      paths.appTwitterJs
-    ],
-    hackernews: [
-      paths.appHackerNewsJs
-    ],
-    reddit: [
-      paths.appReddit
-    ]
+    background: [paths.appBackground],
+    options: [paths.appOptions],
+    login: [paths.appLoginJs],
+    logout: [paths.appLogoutJs],
+    frame: [paths.appFrameJs],
+    save: [paths.appSaveJs],
+    twitter: [paths.appTwitterJs],
+    hackernews: [paths.appHackerNewsJs],
+    reddit: [paths.appReddit]
   },
   output: {
     // Next line is not used in dev but WebpackDevServer crashes without it:
@@ -99,7 +81,7 @@ module.exports = {
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
-      path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
+      path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')
   },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
@@ -125,11 +107,9 @@ module.exports = {
       // and thus babel-runtime might not be resolvable from the source.
       'babel-runtime': path.dirname(
         require.resolve('babel-runtime/package.json')
-      ),
+      )
     },
-    plugins: [
-      new ModuleScopePlugin(paths.appSrc),
-    ],
+    plugins: [new ModuleScopePlugin(paths.appSrc)]
   },
   module: {
     strictExportPresence: true,
@@ -149,15 +129,15 @@ module.exports = {
               formatter: eslintFormatter,
               eslintPath: require.resolve('eslint'),
               baseConfig: {
-                extends: [require.resolve('eslint-config-react-app')],
+                extends: [require.resolve('eslint-config-react-app')]
               },
               ignore: false,
-              useEslintrc: false,
+              useEslintrc: false
             },
-            loader: require.resolve('eslint-loader'),
-          },
+            loader: require.resolve('eslint-loader')
+          }
         ],
-        include: paths.appSrc,
+        include: paths.appSrc
       },
       {
         // "oneOf" will traverse all following loaders until one will
@@ -172,8 +152,8 @@ module.exports = {
             loader: require.resolve('url-loader'),
             options: {
               limit: 10000,
-              name: 'media/[name].[hash:8].[ext]',
-            },
+              name: 'media/[name].[hash:8].[ext]'
+            }
           },
           // Process JS with Babel.
           {
@@ -188,8 +168,8 @@ module.exports = {
               // This is a feature of `babel-loader` for webpack (not Babel itself).
               // It enables caching results in ./node_modules/.cache/babel-loader/
               // directory for faster rebuilds.
-              compact: true,
-            },
+              compact: true
+            }
           },
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
@@ -206,7 +186,7 @@ module.exports = {
                   importLoaders: 1,
                   modules: true,
                   localIdentName: '[local]_[hash:base64:8]'
-                },
+                }
               },
               {
                 loader: require.resolve('postcss-loader'),
@@ -221,15 +201,15 @@ module.exports = {
                         '>1%',
                         'last 4 versions',
                         'Firefox ESR',
-                        'not ie < 9', // React doesn't support IE8 anyway
+                        'not ie < 9' // React doesn't support IE8 anyway
                       ],
-                      flexbox: 'no-2009',
-                    }),
-                  ],
-                },
+                      flexbox: 'no-2009'
+                    })
+                  ]
+                }
               },
-              { loader: require.resolve('sass-loader') },
-            ],
+              { loader: require.resolve('sass-loader') }
+            ]
           },
 
           // "file" loader makes sure those assets get served by WebpackDevServer.
@@ -245,14 +225,14 @@ module.exports = {
             exclude: [/\.js$/, /\.html$/, /\.json$/],
             loader: require.resolve('file-loader'),
             options: {
-              name: '[name].[hash:8].[ext]',
-            },
-          },
-        ],
-      },
+              name: '[name].[hash:8].[ext]'
+            }
+          }
+        ]
+      }
       // ** STOP ** Are you adding a new loader?
       // Make sure to add the new loader(s) before the "file" loader.
-    ],
+    ]
   },
   plugins: [
     // new InterpolateHtmlPlugin(env.raw),
@@ -276,8 +256,8 @@ module.exports = {
         keepClosingSlash: true,
         minifyJS: true,
         minifyCSS: true,
-        minifyURLs: true,
-      },
+        minifyURLs: true
+      }
     }),
     new HtmlWebpackPlugin({
       inject: true,
@@ -294,8 +274,8 @@ module.exports = {
         keepClosingSlash: true,
         minifyJS: true,
         minifyCSS: true,
-        minifyURLs: true,
-      },
+        minifyURLs: true
+      }
     }),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
@@ -307,15 +287,15 @@ module.exports = {
         // https://github.com/facebookincubator/create-react-app/issues/2376
         // Pending further investigation:
         // https://github.com/mishoo/UglifyJS2/issues/2011
-        comparisons: false,
+        comparisons: false
       },
       output: {
         comments: false,
         // Turned on because emoji and regex is not minified properly using default
         // https://github.com/facebookincubator/create-react-app/issues/2488
-        ascii_only: true,
+        ascii_only: true
       },
-      sourceMap: true,
+      sourceMap: true
     }),
     // Moment.js is an extremely popular library that bundles large locale files
     // by default due to how Webpack interprets its code. This is a practical
@@ -334,6 +314,6 @@ module.exports = {
     fs: 'empty',
     net: 'empty',
     tls: 'empty',
-    child_process: 'empty',
-  },
-};
+    child_process: 'empty'
+  }
+}
