@@ -25,7 +25,6 @@ const path = require('path')
 const chalk = require('chalk')
 const fs = require('fs-extra')
 const webpack = require('webpack')
-const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles')
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages')
 const FileSizeReporter = require('react-dev-utils/FileSizeReporter')
 const YAML = require('yamljs')
@@ -34,56 +33,10 @@ const configDirectory = './configs/' + process.env.PROJECT
 const config = require(configDirectory + '/production')
 const paths = require(configDirectory + '/paths')
 
-const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild
-const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild
 const useYarn = fs.existsSync(paths.yarnLockFile)
-
-// These sizes are pretty large. We'll warn for bundles exceeding them.
-const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024
-const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024
-
-// Warn and crash if required files are missing
-// if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
-//   process.exit(1);
-// }
 
 // First, read the current file sizes in build directory.
 // This lets us display how much they changed later.
-measureFileSizesBeforeBuild(paths.appBuild)
-  .then(previousFileSizes => {
-    // Remove all content but keep the directory so that
-    // if you're in it, you don't end up in Trash
-    fs.emptyDirSync(paths.appBuild)
-    // Merge with the public folder
-    copyPublicFolder()
-    // Copy the manifest file
-    generateManifest()
-    // Copy the _locales folder (for browser usage)
-    copyLocalesFolder()
-    // Start the webpack build
-    return build(previousFileSizes)
-  })
-  .then(
-    ({ stats, previousFileSizes, warnings }) => {
-      if (warnings.length) {
-        console.log(chalk.yellow('\n⚠ Compiled with warnings.\n'))
-        console.log(warnings.join('\n\n'))
-        console.log(
-          'To ignore, add ' +
-            chalk.cyan('// eslint-disable-next-line') +
-            ' to the line before.\n'
-        )
-      } else {
-        console.log(chalk.green('\n✔ Compiled in a successfull way.\n'))
-      }
-
-      console.log('File sizes after gzip:\n')
-      printFileSizesAfterBuild(
-        stats,
-        previousFileSizes,
-        paths.appBuild,
-        WARN_AFTER_BUNDLE_GZIP_SIZE,
-        WARN_AFTER_CHUNK_GZIP_SIZE
       )
       console.log()
     },
@@ -95,8 +48,6 @@ measureFileSizesBeforeBuild(paths.appBuild)
   )
 
 // Create the production build and print the deployment instructions.
-function build(previousFileSizes) {
-  console.log('\n🚀 ...Creating an optimized production build...')
 
   let compiler = webpack(config)
   return new Promise((resolve, reject) => {
@@ -124,7 +75,6 @@ function build(previousFileSizes) {
       }
       return resolve({
         stats,
-        previousFileSizes,
         warnings: messages.warnings
       })
     })
