@@ -43,13 +43,6 @@ const isInteractive = process.stdout.isTTY
 const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3000
 const HOST = process.env.HOST || '0.0.0.0'
 
-// Warn and crash if required files are missing
-if (!checkRequiredFiles([paths.appKey])) {
-  console.log(chalk.yellow('\nYou`re missing an API key.'))
-  console.log(chalk.green('Get one from https://getpocket.com/developer/\n'))
-  process.exit(1)
-}
-
 // Empty the build directory
 fs.emptyDirSync(paths.appBuild)
 
