@@ -28,6 +28,7 @@ const webpack = require('webpack')
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages')
 const FileSizeReporter = require('react-dev-utils/FileSizeReporter')
 const YAML = require('yamljs')
+const utilities = require('./common/utilities')
 
 const configDirectory = './configs/' + process.env.PROJECT
 const config = require(configDirectory + '/production')
@@ -37,17 +38,40 @@ const useYarn = fs.existsSync(paths.yarnLockFile)
 
 // First, read the current file sizes in build directory.
 // This lets us display how much they changed later.
+build().then(
+  ({ stats, warnings }) => {
+    if (warnings.length) {
+      console.log(chalk.yellow('\n⚠ ... Compiled with warnings.\n'))
+      console.log(warnings.join('\n\n'))
+      console.log(
+        'To ignore, add ' +
+          chalk.cyan('// eslint-disable-next-line') +
+          ' to the line before.\n'
       )
-      console.log()
-    },
-    err => {
-      console.log(chalk.red('\n✘Failed to compile.\n'))
-      console.log((err.message || err) + '\n')
+      console.log(chalk.red('... Canceling Deployment.'))
       process.exit(1)
+    } else {
+      console.log(chalk.green('✔ ... Compiled succesfully.'))
+      deploy()
     }
-  )
+  },
+  err => {
+    console.log(chalk.red('x ... Failed to compile.\n'))
+    console.log((err.message || err) + '\n')
+    process.exit(1)
+  }
+)
 
 // Create the production build and print the deployment instructions.
+function build() {
+  console.log('\n🚜 ... Creating an optimized production build.')
+
+  // Remove all content but keep the directory so that
+  // if you're in it, you don't end up in Trash
+  fs.emptyDirSync(paths.appBuildDefault)
+
+  utilities.copyPublicFolder(paths)
+  utilities.copyLocalesFolder(paths)
 
   let compiler = webpack(config)
   return new Promise((resolve, reject) => {
@@ -81,26 +105,38 @@ const useYarn = fs.existsSync(paths.yarnLockFile)
   })
 }
 
-function copyPublicFolder() {
-  fs.copySync(paths.appPublic, paths.appBuild, {
-    dereference: true,
-    filter: file => file !== paths.appHtml
-  })
-}
+// Copy
+function deploy() {
+  console.log('🚀 ... Begin Deployment.')
 
-function copyLocalesFolder() {
-  fs.copySync(paths.appLocales, paths.appLocalesDest, {
-    dereference: true,
-    filter: file =>
-      !(file.includes('strings.json') || file.includes('locales.js'))
-  })
-}
-
-function generateManifest() {
-  // Generate the manifest for a chrome extension
+  const keys = utilities.getKeys(paths)
   const manifest = YAML.load(paths.appManifest)
-  fs.writeFileSync(
-    path.join(paths.appBuild, 'manifest.json'),
-    JSON.stringify(manifest, null, 4)
-  )
+
+  Object.keys(keys).map(key => {
+    fs.copySync(paths.appBuildDefault, path.join(paths.appBuild, key), {
+      dereference: true
+    })
+
+    fs.outputFile(
+      path.join(paths.appBuild, `${key}/js/key.js`),
+      `const CONSUMER_KEY = '${keys[key]}'`
+    )
+
+    manifest.description = utilities.descriptionKey[key]
+
+    fs.writeFileSync(
+      path.join(paths.appBuild, `${key}/manifest.json`),
+      JSON.stringify(manifest, null, 4)
+    )
+
+    console.log(`🎯 ... ${key} built.`)
+  })
+
+  console.log('🕸 ... Cleaning Up.')
+
+  fs.remove(paths.appBuildDefault, err => {
+    if (err) return console.error(err)
+
+    console.log('👍 ... Deployment Complete.')
+  })
 }
