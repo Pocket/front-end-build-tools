@@ -30,12 +30,12 @@ const {
 } = require('react-dev-utils/WebpackDevServerUtils')
 const openBrowser = require('react-dev-utils/openBrowser')
 
+const utilities = require('./common/utilities')
+
 const config = require(configDirectory + '/development')
 const paths = require(configDirectory + '/paths')
 
 const createDevServerConfig = require('./common/server')
-
-const manifest = YAML.load(paths.appManifest)
 
 const useYarn = fs.existsSync(paths.yarnLockFile)
 const isInteractive = process.stdout.isTTY
@@ -46,21 +46,18 @@ const HOST = process.env.HOST || '0.0.0.0'
 // Empty the build directory
 fs.emptyDirSync(paths.appBuild)
 
-// Copy public files to build folder
-fs.copySync(paths.appPublic, paths.appBuild, { dereference: true })
+const keys = utilities.getKeys(paths)
+const { key, value } = utilities.getDefaultKey(keys)
 
-// Generate the manifest for a chrome extension
-// TODO: Add --patch,minor-major args
-fs.writeFileSync(
-  path.join(paths.appBuild, 'manifest.json'),
-  JSON.stringify(manifest, null, 4)
+utilities.copyPublicFolder(paths)
+utilities.copyLocalesFolder(paths)
+
+fs.outputFile(
+  path.join(paths.appBuildDefault, 'js/key.js'),
+  `const CONSUMER_KEY = '${value}'`
 )
 
-fs.copySync(paths.appLocales, paths.appLocalesDest, {
-  dereference: true,
-  filter: file =>
-    !(file.includes('strings.json') || file.includes('locales.js'))
-})
+utilities.generateManifest(paths, key)
 
 // We attempt to use the default port but if it is busy, we offer the user to
 // run on a different port. `detect()` Promise resolves to the next free port.
