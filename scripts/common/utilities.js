@@ -24,15 +24,17 @@ module.exports = {
   },
 
   copyLocalesFolder: function(paths) {
-    fs.copySync(
-      paths.appLocales,
-      path.join(paths.appBuildDefault, '_locales'),
-      {
-        dereference: true,
-        filter: file =>
-          !(file.includes('strings.json') || file.includes('locales.js'))
-      }
-    )
+    if (fs.existsSync(paths.appLocales)) {
+      fs.copySync(
+        paths.appLocales,
+        path.join(paths.appBuildDefault, '_locales'),
+        {
+          dereference: true,
+          filter: file =>
+            !(file.includes('strings.json') || file.includes('locales.js'))
+        }
+      )
+    }
   },
 
   generateManifest: function(paths, key, patch) {
