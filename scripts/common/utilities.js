@@ -41,7 +41,9 @@ module.exports = {
     // Generate the manifest
     const manifest = YAML.load(paths.appManifest)
 
-    manifest.description = descriptionKey[key]
+    if (fs.existsSync(paths.appLocales)) {
+      manifest.description = descriptionKey[key]
+    }
 
     fs.writeFileSync(
       path.join(paths.appBuildDefault, 'manifest.json'),
