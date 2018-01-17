@@ -98,7 +98,7 @@ choosePort(HOST, DEFAULT_PORT)
     // Launch WebpackDevServer.
     devServer.listen(port, HOST, err => {
       if (err) return console.log(err)
-      // if (isInteractive) clearConsole();
+      if (isInteractive) clearConsole()
 
       console.log(chalk.cyan('Starting the development server...\n'))
       // openBrowser(urls.localUrlForBrowser);
