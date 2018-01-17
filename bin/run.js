@@ -19,6 +19,7 @@ if (projectIndex === -1) {
 }
 
 const project = args[projectIndex]
+process.env.PROJECT = project
 
 const scriptIndex = args.findIndex(
   x => x === 'build' || x === 'start' || x === 'test'
@@ -34,9 +35,7 @@ switch (script) {
     const result = spawn.sync(
       'node',
       nodeArgs
-        .concat(
-          require.resolve('../extensions/' + project + '/scripts/' + script)
-        )
+        .concat(require.resolve('../scripts/' + script))
         .concat(args.slice(scriptIndex + 1)),
       { stdio: 'inherit' }
     )
