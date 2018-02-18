@@ -7,7 +7,8 @@
     "node": ">=6"
   },
   "files": [
-    "bin"
+    "bin",
+    "scripts"
   ],
   "bin": {
     "build-pocket": "./bin/run.js"
