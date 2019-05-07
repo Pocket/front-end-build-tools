@@ -26,13 +26,13 @@ const chalk = require('chalk')
 const fs = require('fs-extra')
 const webpack = require('webpack')
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages')
-const FileSizeReporter = require('react-dev-utils/FileSizeReporter')
 const YAML = require('yamljs')
 const utilities = require('./common/utilities')
 
 const configDirectory = './configs/' + process.env.PROJECT
 const config = require(configDirectory + '/production')
 const paths = require(configDirectory + '/paths')
+const debug = require('debug')('pocket-build-tools');
 
 const useYarn = fs.existsSync(paths.yarnLockFile)
 
@@ -105,6 +105,46 @@ function build() {
   })
 }
 
+
+function copyFiles(src, target) {
+  fs.copySync(src, target, {
+    dereference: true
+  })
+
+  // BEGIN: verify copied files
+  let copySuccess = true
+  const missingFiles = []
+  const copiedFiles = []
+  const buildDevRoot = fs.readdirSync('./_build/_dev')
+  const buildDevJsRoot = fs.readdirSync('./_build/_dev/js')
+  const targetRoot = fs.readdirSync(target).join(', ')
+  const targetJsRoot = fs.readdirSync(target + '/js').join(', ')
+  debug({ targetRoot, targetJsRoot, buildDevRoot, buildDevJsRoot })
+
+  ;[
+    [ buildDevRoot, targetRoot ],
+    [ buildDevJsRoot, targetJsRoot ]
+  ].forEach(([ _devRoot, _targetRoot ]) => {
+    debug({ _devRoot, _targetRoot })
+    _devRoot.forEach(fileName => {
+      if(!_targetRoot.includes(fileName)) {
+        copySuccess = false
+        missingFiles.push(fileName)
+      } else {
+        copiedFiles.push(fileName)
+      }
+    })
+  })
+
+
+  if(!copySuccess) {
+    throw Error('Copy was not completely successful some files are missing: \n' + missingFiles.join('\n'))
+  } else {
+    debug('Copy success: \n' + copiedFiles.join('\n'))
+  }
+  // END: verify copied files
+}
+
 // Copy
 function deploy() {
   console.log('🚀 ... Begin Deployment.')
@@ -113,10 +153,10 @@ function deploy() {
   const manifest = YAML.load(paths.appManifest)
 
   Object.keys(keys).map(key => {
-    fs.copySync(paths.appBuildDefault, path.join(paths.appBuild, key), {
-      dereference: true
+    copyFiles(paths.appBuildDefault, path.join(paths.appBuild, key))
+    console.log({
+      pathsAppBuildDefault: JSON.stringify(paths.appBuildDefault, null, 4)
     })
-
     fs.outputFile(
       path.join(paths.appBuild, `${key}/js/key.js`),
       `const CONSUMER_KEY = '${keys[key]}'`
