@@ -116,7 +116,15 @@ module.exports = {
               formatter: eslintFormatter,
               eslintPath: require.resolve('eslint'),
               baseConfig: {
-                extends: [require.resolve('eslint-config-react-app')]
+                extends: [require.resolve('eslint-config-react-app')],
+                plugins: [
+                  "react"
+                ],
+                settings: {
+                  react: {
+                    version: "detect"
+                  }
+                },
               },
               ignore: false,
               useEslintrc: false
