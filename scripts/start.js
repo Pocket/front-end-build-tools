@@ -47,7 +47,7 @@ const HOST = process.env.HOST || '0.0.0.0'
 fs.emptyDirSync(paths.appBuild)
 
 let defaultKeys;
-if (process.env.CI_BUILD === 'true') {
+if (process.env.CI === 'true') {
   defaultKeys = {
     key: 'chrome',
     value: process.env.API_KEY
