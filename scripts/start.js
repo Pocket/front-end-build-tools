@@ -46,20 +46,28 @@ const HOST = process.env.HOST || '0.0.0.0'
 // Empty the build directory
 fs.emptyDirSync(paths.appBuild)
 
-if (process.env.IGNORE_KEYS !== 'true') {
+let defaultKeys;
+if (process.env.CI_BUILD === 'true') {
+  defaultKeys = {
+    key: 'chrome',
+    value: process.env.API_KEY
+  }
+} else {
   const keys = utilities.getKeys(paths)
-  const { key, value } = utilities.getDefaultKey(keys)
-
-  utilities.copyPublicFolder(paths)
-  utilities.copyLocalesFolder(paths)
-
-  fs.outputFile(
-    path.join(paths.appBuildDefault, 'js/key.js'),
-    `const CONSUMER_KEY = '${value}'`
-  )
-
-  utilities.generateManifest(paths, key)
+  defaultKeys = utilities.getDefaultKey(keys)
 }
+
+const { key, value } = defaultKeys;
+
+utilities.copyPublicFolder(paths)
+utilities.copyLocalesFolder(paths)
+
+fs.outputFile(
+  path.join(paths.appBuildDefault, 'js/key.js'),
+  `const CONSUMER_KEY = '${value}'`
+)
+
+utilities.generateManifest(paths, key)
 
 
 // We attempt to use the default port but if it is busy, we offer the user to
