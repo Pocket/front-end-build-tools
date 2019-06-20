@@ -46,18 +46,8 @@ const HOST = process.env.HOST || '0.0.0.0'
 // Empty the build directory
 fs.emptyDirSync(paths.appBuild)
 
-let defaultKeys;
-if (process.env.CI === 'true') {
-  defaultKeys = {
-    key: 'chrome',
-    value: process.env.API_KEY
-  }
-} else {
-  const keys = utilities.getKeys(paths)
-  defaultKeys = utilities.getDefaultKey(keys)
-}
-
-const { key, value } = defaultKeys;
+const keys = utilities.getKeys(paths)
+const { key, value } = utilities.getDefaultKey(keys)
 
 utilities.copyPublicFolder(paths)
 utilities.copyLocalesFolder(paths)

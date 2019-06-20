@@ -54,6 +54,12 @@ module.exports = {
   getKeys: function(paths, index) {
     const keyPosition = index || 0
 
+    if (process.env.CI === 'true') {
+      return {
+        key: 'chrome',
+        value: process.env.API_KEY
+      }
+    }
     // Warn and crash if required files are missing
     if (!checkRequiredFiles([paths.appKeys])) {
       console.log(chalk.yellow('\nYou`re missing an API key.'))
