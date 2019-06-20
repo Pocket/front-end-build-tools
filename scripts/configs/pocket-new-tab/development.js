@@ -111,11 +111,11 @@ module.exports = {
               baseConfig: {
                 extends: [require.resolve('eslint-config-react-app')],
                 plugins: [
-                  "react"
+                  'react'
                 ],
                 settings: {
                   react: {
-                    version: "detect"
+                    version: 'detect'
                   }
                 },
               },
