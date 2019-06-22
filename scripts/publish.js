@@ -1,25 +1,68 @@
-const axios = require('axios');
-const [ prArg ] = process.argv.slice(2)
-const publishPullRequest = (prArg === '-pr' )
-//  \
-//   -H 'Accept: */*' \
-//   -H 'Authorization: Bearer vlpABldTQhAAAAAAAAAAi4gaXBb286XMt5fmT8-1C_e9FRFpsKXcalKvMFgNr3jh' \
-//   -H 'Cache-Control: no-cache' \
-//   -H 'Connection: keep-alive' \
-//   -H 'Content-Type: application/octet-stream' \
-//   -H 'Dropbox-API-Arg: {"path":"/HomeworkMatrices.txt","mode":"add","autorename":true,"mute":false,"strict_conflict":false}' \
-//   -data-binary=@/Users/nelsonomuto/test.json
-// {"name": "HomeworkMatrices.txt", "path_lower": "/homeworkmatrices.txt", "path_display": "/HomeworkMatrices.txt", "id": "id:OGKr4JlloPAAAAAAAAAOMw", "client_modified": "2019-06-22T14:54:57Z", "server_modified": "2019-06-22T14:54:57Z", "rev": "38fc7d66240", "size": 40, "is_downloadable": true, "content_hash": "d8e076b35c8f456c2512f2c7d0f28a8a0587ccdd705987b1615bea2fd1b2ffc2"}%
+const program = require('commander')
+program
+  .version('1.0.0')
+  .option('-p, --pull-request', 'publish as pull request')
+  .parse(process.argv)
+const { pullRequest: isPullRequest } = program
+const fs = require('fs')
+const path = require('path')
+const fetch = require('isomorphic-fetch')
+const Dropbox = require('dropbox').Dropbox
+const BUILD_DIR = './_build'
+const { POCKET_DROP_BOX_TOKEN, PROJECT, CI } = process.env
+const { version: VERSION } = JSON.parse(
+  fs.readFileSync(BUILD_DIR + '/chrome/manifest.json')
+)
+const folder = PROJECT
+const subFolder = isPullRequest ? `${folder}/pull-requests` : `${folder}/stable`
+const dbxRootPath = `/ci-releases/${subFolder}`
+if(!CI && !POCKET_DROP_BOX_TOKEN) {
+  console.log('Cannot authenticate to publish to dropbox')
+  console.log('You need to set the env var POCKET_DROP_BOX_TOKEN with a dropbox auth token: https://www.dropbox.com/developers/apps')
+  process.exit(0)
+}
+const dbx = new Dropbox({
+  accessToken: POCKET_DROP_BOX_TOKEN,
+  fetch: fetch
+})
+const browserDirs = fs.readdirSync(BUILD_DIR)
 
-const dropBoxUploadUrl = 'https://content.dropboxapi.com/2/files/upload'
-axios.request({
-    url: dropBoxUploadUrl,
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.POCKET_DROP_BOX_TOKEN}`
-    }
-  }).catch(error => {
-    throw error
-  }).then(response => {
-    console.log(response)
-  })
+browserDirs.forEach(browserName => {
+  const dirPath = path.join(BUILD_DIR, browserName)
+  const isDirectory = fs.statSync(dirPath).isDirectory()
+  let fileName = VERSION
+  if (isPullRequest) {
+    fileName = `pull-request-${VERSION}`
+  }
+  if (isDirectory) {
+    uploadFile({
+      savePath: `${dbxRootPath}/${browserName}/${fileName}.zip`,
+      contents: getZip({ dirPath })
+    })
+  }
+})
+function getZip({ dirPath }) {
+  return fs.readFileSync(path.join(dirPath, 'manifest.json'))
+}
+function uploadFile({ savePath, contents }) {
+  dbx
+    .filesUpload({
+      path: savePath,
+      contents,
+      autorename: true,
+      strict_conflict: false,
+      mute: false,
+      mode: 'overwrite'
+    })
+    .then(function(response) {
+      console.log(`Publish succesful to ${savePath}`)
+      console.log(response)
+    })
+    .catch(function({ status, error: { error_summary } }) {
+      // dropbox sdk uses error.error_summary for error messages
+      console.log(`Unable to publish to ${savePath}`)
+      console.log(`Dropbox Error: ${error_summary}`)
+      console.log(`Dropbox Status: ${status}`)
+      process.exit(1)
+    })
+}
