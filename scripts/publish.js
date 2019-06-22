@@ -6,10 +6,8 @@ program
 const { pullRequest: isPullRequest } = program
 const fs = require('fs')
 const path = require('path')
-const delay = require('lodash.delay')
 const fetch = require('isomorphic-fetch')
 const Dropbox = require('dropbox').Dropbox
-const DROPBOX_WRITE_DELAY = 1000
 const BUILD_DIR = './_build'
 const { POCKET_DROP_BOX_TOKEN, PROJECT, CI } = process.env
 const { version: VERSION } = JSON.parse(
@@ -29,6 +27,7 @@ const dbx = new Dropbox({
   accessToken: POCKET_DROP_BOX_TOKEN,
   fetch: fetch
 })
+let dropBoxWriteDelay = 1000 // prevent "too many writes error"
 const browserDirs = fs.readdirSync(BUILD_DIR)
 browserDirs.forEach(browserName => {
   const dirPath = path.join(BUILD_DIR, browserName)
@@ -38,15 +37,16 @@ browserDirs.forEach(browserName => {
     fileName = `pull-request-${VERSION}`
   }
   if (isDirectory) {
-    delay(
+    setTimeout(
       () =>
         uploadFile({
           savePath: `${dbxRootPath}/${browserName}/${fileName}.zip`,
           contents: getZip({ dirPath })
         }),
-      DROPBOX_WRITE_DELAY,
-      'write-delay'
+        dropBoxWriteDelay
     )
+    dropBoxWriteDelay = dropBoxWriteDelay + 500 // must be incremented as writes are invoked to prevent "too many writes error"
+    console.log({ dropBoxWriteDelay })
   }
 })
 function getZip({ dirPath }) {
