@@ -51,13 +51,17 @@ module.exports = {
     )
   },
 
-  getKeys: function(paths, index) {
-    const keyPosition = index || 0
-
-    if (process.env.CI === 'true') {
+  getKeys: function(paths) {
+    const { POCKET_API_KEY, CI } = process.env
+    if (CI === 'true') {
       return {
-        key: 'chrome',
-        value: process.env.POCKET_API_KEY
+        chrome:POCKET_API_KEY,
+        edge: POCKET_API_KEY,
+        opera: POCKET_API_KEY,
+        safari:POCKET_API_KEY,
+        yandex: POCKET_API_KEY,
+        brave: POCKET_API_KEY,
+        vivaldi: POCKET_API_KEY
       }
     }
     // Warn and crash if required files are missing
