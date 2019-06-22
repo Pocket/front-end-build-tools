@@ -24,6 +24,7 @@
   "homepage": "https://github.com/Pocket/front-end-build-tools#readme",
   "dependencies": {
     "autoprefixer": "^7.1.4",
+    "axios": "^0.19.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.1",
     "babel-jest": "^21.2.0",

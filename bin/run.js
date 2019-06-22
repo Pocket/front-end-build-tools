@@ -22,13 +22,14 @@ const project = args[projectIndex]
 process.env.PROJECT = project
 
 const scriptIndex = args.findIndex(
-  x => x === 'build' || x === 'start' || x === 'test'
+  x => x.match(/build|start|test|publish/)
 )
 
 const script = scriptIndex === -1 ? args[0] : args[scriptIndex]
 const nodeArgs = scriptIndex > 0 ? args.slice(0, projectIndex) : []
 
 switch (script) {
+  case 'publish':
   case 'build':
   case 'start':
   case 'test': {

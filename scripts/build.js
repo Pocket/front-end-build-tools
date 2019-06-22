@@ -26,15 +26,12 @@ const chalk = require('chalk')
 const fs = require('fs-extra')
 const webpack = require('webpack')
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages')
-const FileSizeReporter = require('react-dev-utils/FileSizeReporter')
 const YAML = require('yamljs')
 const utilities = require('./common/utilities')
 
 const configDirectory = './configs/' + process.env.PROJECT
 const config = require(configDirectory + '/production')
 const paths = require(configDirectory + '/paths')
-
-const useYarn = fs.existsSync(paths.yarnLockFile)
 
 // First, read the current file sizes in build directory.
 // This lets us display how much they changed later.

@@ -57,7 +57,7 @@ module.exports = {
     if (process.env.CI === 'true') {
       return {
         key: 'chrome',
-        value: process.env.API_KEY
+        value: process.env.POCKET_API_KEY
       }
     }
     // Warn and crash if required files are missing
