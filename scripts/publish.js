@@ -6,6 +6,7 @@ program
 const { pullRequest: isPullRequest } = program
 const fs = require('fs')
 const path = require('path')
+const throttle = require('lodash.throttle')
 const fetch = require('isomorphic-fetch')
 const Dropbox = require('dropbox').Dropbox
 const BUILD_DIR = './_build'
@@ -26,7 +27,7 @@ const dbx = new Dropbox({
   fetch: fetch
 })
 const browserDirs = fs.readdirSync(BUILD_DIR)
-
+const uploadFileThrottled = throttle(uploadFile, 1000)
 browserDirs.forEach(browserName => {
   const dirPath = path.join(BUILD_DIR, browserName)
   const isDirectory = fs.statSync(dirPath).isDirectory()
@@ -35,7 +36,7 @@ browserDirs.forEach(browserName => {
     fileName = `pull-request-${VERSION}`
   }
   if (isDirectory) {
-    uploadFile({
+    uploadFileThrottled({
       savePath: `${dbxRootPath}/${browserName}/${fileName}.zip`,
       contents: getZip({ dirPath })
     })
