@@ -49,7 +49,10 @@ module.exports = {
     logout: [paths.appLogoutJs],
     frame: [paths.appFrameJs],
     save: [paths.appSaveJs],
-    twitter: [paths.appTwitterJs],
+    twitter: [
+      paths.appLegacyTwitterJs,
+      paths.appTwitterJs
+    ],
     hackernews: [paths.appHackerNewsJs],
     reddit: [paths.appReddit]
   },

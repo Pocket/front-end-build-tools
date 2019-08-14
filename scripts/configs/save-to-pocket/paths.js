@@ -68,6 +68,7 @@ module.exports = {
   appLogoutJs: resolveApp('src/containers/auth/logout'),
   appSaveJs: resolveApp('src/containers/save/save'),
   appSaveHTML: resolveApp('src/containers/save/save.html'),
+  appLegacyTwitterJs: resolveApp('src/containers/sites/twitter/legacy-twitter'),
   appTwitterJs: resolveApp('src/containers/sites/twitter/twitter'),
   appHackerNewsJs: resolveApp('src/containers/sites/hackerNews/hackerNews'),
   appReddit: resolveApp('src/containers/sites/reddit/reddit'),
